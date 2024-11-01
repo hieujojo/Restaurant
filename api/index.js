@@ -1,6 +1,7 @@
+const dotenv = require("dotenv");
+dotenv.config();
 
 const express = require("express");
-const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -11,16 +12,10 @@ const dishRoute = require('./routes/dish.js');
 const newRoute = require('./routes/new.js');
 const tableRoute = require('./routes/table.js');
 const chefRoute = require('./routes/chef.js');
-<<<<<<< HEAD
 const areaRoute = require('./routes/area.js');
-
-=======
->>>>>>> 862becd20bdc1a1865e710e1615e0bacfa2b37db
+const socialRoutes = require('./routes/socialAuth.js');
 const path = require('path');
-
-
-const app = express()
-dotenv.config()
+const app = express();
 
 const connect = async () => {
     try {
@@ -41,25 +36,23 @@ mongoose.connection.on("connected", ()=>{
 const corsOptions = {
     origin: 'http://localhost:3000',
     credentials: true, 
+    methods: ['GET', 'POST'],
 };
 app.use(cors(corsOptions));
-
-
-//middleware
-app.use(cookieParser());
 app.use(express.json());
+
+
+app.use(cookieParser());
 
 app.use("/api/users", usersRoute);
 app.use("/api/auth", authRoute);
+app.use("/api/social", socialRoutes);
 app.use("/api/booking", bookingRoute);
 app.use("/api/dish", dishRoute);
 app.use("/api/new", newRoute);
 app.use("/api/table", tableRoute);
 app.use("/api/chef", chefRoute);
-<<<<<<< HEAD
 app.use("/api/area", areaRoute);
-=======
->>>>>>> 862becd20bdc1a1865e710e1615e0bacfa2b37db
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
@@ -74,10 +67,10 @@ app.use((err,req,res,next)=>{
     })
 })
 
+
 app.listen(8800, ()=>{
     connect()
     console.log("Connected to backend.")
 })
-
 
 

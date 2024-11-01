@@ -1,5 +1,5 @@
-<<<<<<< HEAD
 const mongoose = require('mongoose');
+const { type } = require('os');
 const UserSchema = new mongoose.Schema({
     name: {
       type: String,
@@ -18,13 +18,21 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
       type: String,
-      required: true,
+      required: function() {
+        return !this.googleId; 
+      },
     },
     isAdmin: {
       type: Boolean,
       default: false,
     },
     img: {
+      type: String,
+    },
+    avatar:{
+      type: String,
+    },
+    googleId:{
       type: String,
     },
     booking: [
@@ -45,51 +53,3 @@ const UserSchema = new mongoose.Schema({
 );
 
 module.exports = mongoose.model("User", UserSchema);
-=======
-const mongoose = require('mongoose');
-const UserSchema = new mongoose.Schema({
-    name: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    phone: {
-      type: String,
-    },
-    gender: {
-      type: String,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    isAdmin: {
-      type: Boolean,
-      default: false,
-    },
-    img: {
-      type: String,
-    },
-    booking: [
-        {
-            type: { type: String},
-        }
-    ],
-
-
-    // test au
-    // role: {
-    //     type: String,
-    //     default: "customer",
-    //     enum: ['super-admin','admin', 'manage', 'customer']
-    // }
-  },
-  { timestamps: true }
-);
-
-module.exports = mongoose.model("User", UserSchema);
->>>>>>> 862becd20bdc1a1865e710e1615e0bacfa2b37db

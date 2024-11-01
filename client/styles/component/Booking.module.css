@@ -1,59 +1,28 @@
-<<<<<<< HEAD
-
-
-
- .elds_menu_opener {
+.elds_menu_opener {
     width: 34.875px;
     height: 46.938px;
     cursor: pointer;
 }
-.line1, .line2, .line3, .line4 {
+
+.line1,
+.line2,
+.line3,
+.line4 {
     transition: all 0.3s ease;
 }
+
 .elds_menu_opener:hover .line1 {
     transform: translateX(10px);
 }
-.elds_menu_opener:hover .line4 {
+
+.elds_menuopener:hover .line4 {
     transform: translateX(-10px);
 }
 
-/* hiệu ứng hình ảnh staff */
 .parallax {
-        background-attachment: fixed;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-        height: 500px;
-    }
-
-
-=======
-
-
-
- .elds_menu_opener {
-    width: 34.875px;
-    height: 46.938px;
-    cursor: pointer;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 500px;
 }
-.line1, .line2, .line3, .line4 {
-    transition: all 0.3s ease;
-}
-.elds_menu_opener:hover .line1 {
-    transform: translateX(10px);
-}
-.elds_menu_opener:hover .line4 {
-    transform: translateX(-10px);
-}
-
-/* hiệu ứng hình ảnh staff */
-.parallax {
-        background-attachment: fixed;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-        height: 500px;
-    }
-
-
->>>>>>> 862becd20bdc1a1865e710e1615e0bacfa2b37db

@@ -1,7 +1,5 @@
-
-
 import { useState, useEffect } from 'react';
-import Layout from '@/components/layout';
+import Layout from '@/components/Layout';
 import axios from 'axios';
 import { GET_PROFILE_USE, UPDATE_USER_ENDPOINT } from '@/utils/constants/endpoints';
 interface UserDetails {
@@ -16,7 +14,7 @@ const Profile = () => {
 
 
   const [details, setDetails] = useState<UserDetails>();
-  const [isEditing, setIsEditing] = useState(false); // Đặt thành false khi bắt đầu
+  const [isEditing, setIsEditing] = useState(false); 
   const [selectedImage, setSelectedImage] = useState('');
   const [updatedName, setUpdatedName] = useState('');
   const [updatedEmail, setUpdatedEmail] = useState('');
@@ -88,10 +86,6 @@ const Profile = () => {
       console.error("Error saving data:", error);
     }
   };
-
-  // if (!details) {
-  //   return <div>Loading...</div>;
-  // }
 
   return (
     <Layout>

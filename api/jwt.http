@@ -1,0 +1,30 @@
+GET http://localhost:8800/api/social/social-login 
+Authorization: Beaer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRlcHRyYWl2YWlkYW4iLCJpYXQiOjE3Mjg4MTM4ODgsImV4cCI6MTcyODgxMzkxOH0.u1LhQp1IKUKvTy0kK2MFLFeRhnO5cFUMw6FYzqoXstc
+
+###
+
+POST http://localhost:8800/api/social/social-login
+Content-Type: application/json
+
+{
+    "username": "deptraivaidan"
+}
+
+###
+
+POST http://localhost:5500/refreshToken
+Content-Type:  application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRlcHRyYWl2YWlkYW4iLCJpYXQiOjE3Mjg4MTM3OTB9.A8LZAX0U6dqHZJ7kX29DgTTcx-UuENMMY_jY1y2u0CQ"
+}
+
+###
+
+POST http://localhost:5500/logout
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRlcHRyYWl2YWlkYW4iLCJpYXQiOjE3Mjg4MTM3OTB9.A8LZAX0U6dqHZJ7kX29DgTTcx-UuENMMY_jY1y2u0CQ"
+
+}

@@ -9,7 +9,7 @@ import {
   GET_PROFILE_USE,
   CREATE_BOOKING_ENDPOINT,
   GET_DISHS_ENDPOINT,
-} from "@/utils/constants/endpoint";
+} from "@/utils/constants/endpoints";
 
 interface FormData {
   table: string;

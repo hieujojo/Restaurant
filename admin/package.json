@@ -10,16 +10,12 @@
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.0",
-<<<<<<< HEAD
     "@reduxjs/toolkit": "^2.2.7",
     "axios": "^1.7.2",
-=======
->>>>>>> 862becd20bdc1a1865e710e1615e0bacfa2b37db
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.416.0",
-    "next": "14.2.5",
-<<<<<<< HEAD
+    "next": "^14.2.5",
     "nookies": "^2.5.2",
     "react": "^18",
     "react-dom": "^18",
@@ -27,12 +23,6 @@
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "use-debounce": "^10.0.2"
-=======
-    "react": "^18",
-    "react-dom": "^18",
-    "tailwind-merge": "^2.4.0",
-    "tailwindcss-animate": "^1.0.7"
->>>>>>> 862becd20bdc1a1865e710e1615e0bacfa2b37db
   },
   "devDependencies": {
     "@types/node": "^20",
