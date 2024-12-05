@@ -14,6 +14,9 @@ interface Post {
   type: string;
   createdAt?: string;
   updatedAt?: string;
+  author: string;
+  rating: string;
+  review_score: string;
 }
 
 const BlogClassic = () => {
@@ -22,11 +25,20 @@ const BlogClassic = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [BlogPerPage] = useState(6);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+
+  const BASE_URL = "http://localhost:8800/";
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(GET_NEWS_ENDPOINT);
-        setPosts(response.data);
+        const formattedPosts = response.data.map((post: Post) => ({
+          ...post,
+          image: post.image.map((img) =>
+            img.startsWith("http") ? img : `${BASE_URL}${img}`
+          ),
+        }));
+        setPosts(formattedPosts);
       } catch (error) {
         setError("Không thể tải bài viết.");
       }
@@ -42,6 +54,10 @@ const BlogClassic = () => {
     router.push("/");
   };
 
+  const handleBlogNavigation = () => {
+    router.push("/Blog/BlogClassic");
+  };
+
   if (error) {
     return <div className="text-white">{error}</div>;
   }
@@ -50,10 +66,11 @@ const BlogClassic = () => {
   const indexOfFirstBlog = indexOfLastBlog - BlogPerPage;
   const currentBlog = posts.slice(indexOfFirstBlog, indexOfLastBlog);
 
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(posts.length / BlogPerPage); i++) {
-    pageNumbers.push(i);
-  }
+  const totalPages = Math.ceil(posts.length / BlogPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <Layout>
@@ -63,8 +80,12 @@ const BlogClassic = () => {
             Blog Classic
           </div>
           <div className="flex text-white mt-32">
-            <div className="hover:text-[#C9AB81] cursor-pointer"
-            onClick={handleNavigation}>Home</div>
+            <div
+              className="hover:text-[#C9AB81] cursor-pointer"
+              onClick={handleNavigation}
+            >
+              Home
+            </div>
             <div className="mt-2.5 ml-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -75,24 +96,29 @@ const BlogClassic = () => {
                   points="0.4 0.4 3.6 4.2 0.4 8.1"
                   fill=""
                   stroke="currentColor"
-                  stroke-width="1"
+                  strokeWidth="1"
                 ></polyline>
                 <polyline
                   points="4.5 0.4 7.7 4.2 4.5 8.1"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="1"
+                  strokeWidth="1"
                 ></polyline>
               </svg>
             </div>
-            <div className="ml-4">Blog Classic</div>
+            <div
+              className="ml-4 hover:text-[#C9AB81] cursor-pointer"
+              onClick={handleBlogNavigation}
+            >
+              Blog Classic
+            </div>
           </div>
         </div>
       </div>
       {selectedPost ? (
         <BlogDetails post={selectedPost} />
       ) : (
-        <div className="">
+        <div>
           <div className="flex flex-wrap justify-center">
             {currentBlog.map((post) => (
               <div key={post._id} className="">
@@ -115,12 +141,32 @@ const BlogClassic = () => {
                     <div>
                       {new Date(post.createdAt || "").toLocaleDateString()}
                     </div>
+                    <div className="mt-2.5 ml-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 8.3 8.5"
+                        className="w-2 h-2 text-custom-yellow"
+                      >
+                        <polyline
+                          points="0.4 0.4 3.6 4.2 0.4 8.1"
+                          fill=""
+                          stroke="currentColor"
+                          strokeWidth="1"
+                        ></polyline>
+                        <polyline
+                          points="4.5 0.4 7.7 4.2 4.5 8.1"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1"
+                        ></polyline>
+                      </svg>
+                    </div>
                     <div className="ml-2 w-32">{post.type}</div>
                   </div>
-                  <div className="text-custom-yellow uppercase text-2xl font-sans mt-3 tracking-[4px]">
+                  <div className="text-custom-yellow uppercase text-2xl font-sans mt-3 tracking-[3px]">
                     {post.title}
                   </div>
-                  <div className="font-open-sans-condensed text-white text-xl mt-3 w-[440px]">
+                  <div className="font-open-sans-condensed text-white text-xl mt-3 w-[360px]">
                     {post.content.slice(0, 100)}...
                   </div>
                   <div className="font-open-sans-condensed text-white uppercase tracking-[4px] mt-14 text-md">
@@ -133,20 +179,24 @@ const BlogClassic = () => {
             ))}
           </div>
 
-          <div className="flex justify-center">
-            {pageNumbers.map((number) => (
-              <button
-                key={number}
-                onClick={() => setCurrentPage(number)}
-                className={`px-3 py-1 mx-1 rounded ${
-                  number === currentPage
-                    ? "bg-slate-600 text-white"
-                    : "bg-gray-300"
-                }`}
-              >
-                {number}
-              </button>
-            ))}
+          <div className="flex justify-center space-x-4 mt-8">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <span className="flex items-center justify-center text-white">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:opacity-50"
+            >
+              Next
+            </button>
           </div>
         </div>
       )}

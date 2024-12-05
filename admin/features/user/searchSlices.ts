@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-type SearchState = {
+type SearchUserState = {
     query: string;
     results: any[];
 };
 
-const initialState: SearchState = {
+const initialState: SearchUserState = {
     query: '',
     results: [],
 };

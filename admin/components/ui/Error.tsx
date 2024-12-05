@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch} from 'react-redux';
 import { clearError } from '../../features/slices/errorSlices';
 
 interface ErrorProps {
@@ -13,7 +13,7 @@ const Error: React.FC<ErrorProps> = ({ state, message }) => {
     React.useEffect(() => {
         const timer = setTimeout(() => {
             dispatch(clearError());
-        }, 2000); // Hide alert after 2 seconds
+        }, 3000);
 
         return () => clearTimeout(timer);
     }, [dispatch]);

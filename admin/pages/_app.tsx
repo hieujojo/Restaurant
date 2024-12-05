@@ -29,7 +29,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
   }, [router]);
 
   if (loading) {
-    return null; // Hoặc một spinner/loading component
+    return null; 
   }
 
   return <Provider store={store}>

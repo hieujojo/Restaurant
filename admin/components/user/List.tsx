@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setUsers } from '../../features/user/userSlices';
 import { setSearchQuery, setSearchResults } from '@/features/user/searchSlices';
 import { useDebouncedCallback } from 'use-debounce';
+import { setError } from '@/features/slices/errorSlices';
 
 const List = () => {
     const users = useSelector((state: RootState) => state.users.users);
@@ -38,7 +39,7 @@ const List = () => {
                 withCredentials: true
             });
             if (res.status == 200) {
-                alert("done");
+                dispatch(setError({ status: 'success', message: 'Delete user successfully!' }));
                 const cookies = parseCookies();
                 const response = await axios.get(GET_USERS_ENDPOINT, {
                     headers: {
@@ -48,16 +49,15 @@ const List = () => {
                 });
                 dispatch(setUsers(response.data));
             } else {
-                alert("false");
+                dispatch(setError({ status: 'danger', message: 'Delete user failed!' }));
             }
         } catch (error) {
-            console.log('error', error);
-            alert('noooo');
+            dispatch(setError({ status: 'danger', message: 'Delete user failed!' }));
         }
     }
 
-    const query = useSelector((state: RootState) => state.search.query);
-    const results = useSelector((state: RootState) => state.search.results);
+    const query = useSelector((state: RootState) => state.searchUser.query);
+    const results = useSelector((state: RootState) => state.searchUser.results);
 
     const debouncedSearch = useDebouncedCallback(
         async (searchQuery: string) => {

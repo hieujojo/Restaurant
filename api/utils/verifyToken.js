@@ -1,20 +1,44 @@
-// Không cần xác thực, chỉ cần chạy middleware đơn giản để xử lý request
+const jwt = require("jsonwebtoken");
+const { createError } = require("../utils/error.js");
+
 const verifyToken = (req, res, next) => {
-    next(); // Bỏ qua xác thực token
+    const token = req.cookies.auth_token;
+    if (!token) {
+        return next(createError(401, "You are not authenticated! 3"));
+    }
+
+    jwt.verify(token, process.env.JWT, (err, user) => {
+        if (err) return next(createError(403, "Token is not valid!"));
+        req.user = user;
+        next();
+    });
 };
 
-// Không cần xác thực người dùng
 const verifyUser = (req, res, next) => {
-    next(); // Bỏ qua xác thực người dùng
+    verifyToken(req, res, (err) => {
+        if (err) return next(err);
+        if (req.user.id === req.params.id || req.user.isAdmin) {
+            next();
+        } else {
+            return next(createError(403, "You are not authorized! 4"));
+        }
+    });
 };
 
-// Không cần xác thực admin
 const verifyAdmin = (req, res, next) => {
-    next(); // Bỏ qua xác thực admin
+    verifyToken(req, res, (err) => {
+        if (err) return next(err);
+        if (req.user.isAdmin) {
+            next();
+        } else {
+            return next(createError(403, "You are not authorized! 5"));
+        }
+    });
 };
 
 module.exports = {
     verifyToken,
     verifyUser,
     verifyAdmin,
+    // checkRole
 };

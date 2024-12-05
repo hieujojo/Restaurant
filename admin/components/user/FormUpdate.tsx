@@ -91,7 +91,6 @@ const FormUpdate: React.FC<User> = ({ _id, img, password, name, email, phone, ge
                     },
                     withCredentials: true,
                 });
-                console.log('API response:', response.data);
                 if (response.status === 200) {
                     dispatch(updateUser(response.data));
                     dispatch(setError({ status: 'success', message: 'User updated successfully.' }));
@@ -153,7 +152,6 @@ const FormUpdate: React.FC<User> = ({ _id, img, password, name, email, phone, ge
                                             name="name"
                                             value={formData.name}
                                             onChange={handleChange}
-                                            required
                                         />
                                         {error.name && <span className="text-danger">{error.name}</span>}
                                     </div>
@@ -166,7 +164,6 @@ const FormUpdate: React.FC<User> = ({ _id, img, password, name, email, phone, ge
                                             name="email"
                                             value={formData.email}
                                             onChange={handleChange}
-                                            required
                                         />
                                         {error.email && <span className="text-danger">{error.email}</span>}
                                     </div>
@@ -179,7 +176,6 @@ const FormUpdate: React.FC<User> = ({ _id, img, password, name, email, phone, ge
                                             name="phone"
                                             value={formData.phone}
                                             onChange={handleChange}
-                                            required
                                         />
                                         {error.phone && <span className="text-danger">{error.phone}</span>}
                                     </div>
@@ -189,7 +185,7 @@ const FormUpdate: React.FC<User> = ({ _id, img, password, name, email, phone, ge
                                             M:
                                             <input
                                                 type="radio"
-                                                className="flat"
+                                                className="flat me-5"
                                                 name="gender"
                                                 id="genderM"
                                                 value="male"

@@ -1,4 +1,4 @@
-interface Chef {
+export interface Chef {
     _id: string;
     name: string;
     image: string | File;
@@ -9,3 +9,6 @@ export interface FormData {
     image: string | File;
     description: string;
   }
+export interface ChefState {
+    [key: string]: Chef[];
+}

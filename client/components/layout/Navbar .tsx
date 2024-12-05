@@ -68,7 +68,7 @@ const Navbar = () => {
               <div className="inline-block absolute left-0 mt-[40%] w-52 bg-custom-dark px-3 text-white transform scale-y-0 origin-top transition-transform duration-500 ease-in-out group-hover:scale-y-100">
                 <div className="flex flex-col space-y-2">
                   {" "}
-                  {["Booking Page", "Profile"].map((item) => (
+                  {/* {["Booking Page", "Profile"].map((item) => (
                     <Link
                       href={
                         item === "Profile"
@@ -91,7 +91,7 @@ const Navbar = () => {
                         ></span>
                       </span>
                     </Link>
-                  ))}
+                  ))} */}
                   <Link href="/Contact/map" legacyBehavior>
                     <span
                       className={`inline-block px-3 py-2 hover:bg-gray-700 ${style.link}`}
@@ -192,7 +192,7 @@ const Navbar = () => {
               </div>
             </li>
 
-            <li className="relative mx-2 group">
+            {/* <li className="relative mx-2 group">
               <Link href="/shop" legacyBehavior>
                 <a
                   className={`tracking-[5px] relative text-white hover:text-gray-400 capitalize transition duration-500 ml-10 ease-in-out font-open-sans-condensed text-lg ${style.link}`}
@@ -205,7 +205,7 @@ const Navbar = () => {
                 </a>
               </Link>
               <div className="my-[1%]"></div>
-            </li>
+            </li> */}
           </ul>
         </nav>
       </div>

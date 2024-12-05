@@ -1,7 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import axios from 'axios';
+import { GET_PROFILE_USE } from '@/utils/constants/endpoints';
+interface UserDetails {
+  _id: string;
+  name: string;
+  email: string;
+  gender: string;
+  phone: string;
+  img: string;
+}
+const TopNavigation = () => {
+  const [details, setDetails] = useState<UserDetails>();
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const res = await axios.get(GET_PROFILE_USE, {
+          withCredentials: true,
+        });
+        setDetails(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchUserProfile()
 
-const topNavigation = () => {
+  }, []);
   return (
     <div className="top_nav">
           <div className="nav_menu">
@@ -12,7 +36,7 @@ const topNavigation = () => {
               <ul className=" navbar-right">
                 <li className="nav-item dropdown open ps-[15px]">
                   <a href="javascript:;" className="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
-                    <Image src="/images/img.jpg" width={100} height={100} alt="vds" />John Doe
+                    <Image src={`/${details?.img}`} width={100} height={100} alt="vds" />John Doe
                   </a>
                   <div className="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
                     <a className="dropdown-item"  href="javascript:;"> Profile</a>
@@ -96,4 +120,4 @@ const topNavigation = () => {
   )
 }
 
-export default topNavigation
+export default TopNavigation

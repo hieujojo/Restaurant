@@ -8,7 +8,7 @@ const TableSchema = new mongoose.Schema({
       type: String,
       required: true,
     },
-    chair: {
+    quantity: {
       type: Number,
       required: true,
     },

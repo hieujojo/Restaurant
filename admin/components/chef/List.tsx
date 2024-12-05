@@ -1,4 +1,4 @@
-import { GET_CHEFS_ENDPOINT, GET_DISHES_BY_CHEF_ID_ENDPOINT } from '@/utils/constants/endpoints';
+import { DELETE_CHEF_ENDPOINT, GET_CHEFS_ENDPOINT, GET_DISHES_BY_CHEF_ID_ENDPOINT, SEARCH_CHEF_ENDPOINT } from '@/utils/constants/endpoints';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import FormUpdate from './FormUpdate';
@@ -6,6 +6,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/store';
 import { setChef } from '@/features/chef/chefSlice';
 import Image from 'next/image';
+import { parseCookies } from 'nookies';
+import { setSearchQueryChef, setSearchResultsChef } from '@/features/chef/searchSlices';
+import { useDebouncedCallback } from 'use-debounce';
+import type {DishesState} from '../dish/interfaces'
+import { setError } from '@/features/slices/errorSlices';
 
 const List = () => {
     const chefs = useSelector((state: RootState) => state.chefs.chefs);
@@ -41,6 +46,59 @@ const List = () => {
         fetchChefsAndDishes();
     }, [dispatch]);
 
+    const handleDelete = async (id: string) => {
+        try {
+            const res = await axios.delete(DELETE_CHEF_ENDPOINT(id), {
+                withCredentials: true
+            });
+            if (res.status == 200) {
+                dispatch(setError({ status: 'success', message: 'Delete chef successfully!' }));
+                const cookies = parseCookies();
+                const response = await axios.get(GET_CHEFS_ENDPOINT, {
+                    headers: {
+                        'Authorization': `Bearer ${cookies.auth_token}`,
+                    },
+                    withCredentials: true,
+                });
+                dispatch(setChef(response.data));
+            } else {
+                dispatch(setError({ status: 'danger', message: 'Delete chef failed!' }));
+            }
+        } catch (error) {
+            dispatch(setError({ status: 'danger', message: 'Delete chef failed!' }));
+        }
+    }
+
+    const queryChef = useSelector((state: RootState) => state.searchChef.queryChef);
+    const resultsChef = useSelector((state: RootState) => state.searchChef.resultsChef);
+
+    const debouncedSearch = useDebouncedCallback(
+        async (searchQuery: string) => {
+            try {
+                if(searchQuery){
+                    const response = await axios.get(SEARCH_CHEF_ENDPOINT(searchQuery), {
+                        withCredentials: true
+                    });
+                    dispatch(setSearchResultsChef(response.data));
+                }else{
+                    const response = await axios.get(GET_CHEFS_ENDPOINT, {
+                        withCredentials: true,
+                    });
+                    dispatch(setSearchResultsChef(response.data));
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+            }
+        },
+        500
+    );
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const valueChef = e.target.value;
+        dispatch(setSearchQueryChef(valueChef));
+        debouncedSearch(valueChef);
+    };
+
     return (
         <div>
             <div className="row d-flex justify-content-between mx-2">
@@ -62,7 +120,7 @@ const List = () => {
                     <div id="datatable-checkbox_filter" className="dataTables_filter">
                         <label className="d-flex align-items-center">
                             Search:
-                            <input type="search" className="form-control input-sm mx-3" placeholder="" aria-controls="datatable-checkbox" />
+                            <input type="search" value={queryChef} onChange={handleChange} className="form-control input-sm mx-3" placeholder="" aria-controls="datatable-checkbox" />
                         </label>
                     </div>
                 </div>
@@ -81,10 +139,46 @@ const List = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {chefs.map(chef => (
+                    {resultsChef.length > 0 ? (
+                            resultsChef.map(result => (
+                                <tr key={result._id}>
+                                <td><input type="checkbox" /></td>
+                                <td><Image
+                                        src={`/${result.image}`}
+                                        alt={`${result.name}'s avatar`}
+                                        width={64}
+                                        height={64}
+                                        className="object-cover rounded-full"
+                                    /></td>
+                                <td>{result.name}</td>
+                                <td className="w-[50%]">{result.description}</td>
+                                <td>
+                                    {dishes[result._id] ? (
+                                        <ul>
+                                            {dishes[result._id].map(dish => (
+                                                <li key={dish._id}>{dish.name}</li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <span></span>
+                                    )}
+                                </td>
+                                <td className="flex">
+                                    <FormUpdate _id={result._id} name={result.name} image={result.image} description={result.description}/>
+                                    <button type="button" onClick={() => handleDelete(result._id)} className="btn btn-danger btn-sm text-[13px]"><i className="fa fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            ))
+                        ) : (chefs.map(chef => (
                             <tr key={chef._id}>
                                 <td><input type="checkbox" /></td>
-                                <td><img src={`${chef.image}`} alt={`${chef.name} image`} width={100} height={100} /></td>
+                                <td><Image
+                                        src={`/${chef.image}`}
+                                        alt={`${chef.name}'s avatar`}
+                                        width={64}
+                                        height={64}
+                                        className="object-cover rounded-full"
+                                    /></td>
                                 <td>{chef.name}</td>
                                 <td className="w-[50%]">{chef.description}</td>
                                 <td>
@@ -95,15 +189,15 @@ const List = () => {
                                             ))}
                                         </ul>
                                     ) : (
-                                        <span>Loading...</span>
+                                        <span></span>
                                     )}
                                 </td>
                                 <td className="flex">
-                                    <FormUpdate />
-                                    <button type="button" className="btn btn-danger btn-sm text-[13px]"><i className="fa fa-trash"></i></button>
+                                    <FormUpdate _id={chef._id} name={chef.name} image={chef.image} description={chef.description}/>
+                                    <button type="button" onClick={() => handleDelete(chef._id)} className="btn btn-danger btn-sm text-[13px]"><i className="fa fa-trash"></i></button>
                                 </td>
                             </tr>
-                        ))}
+                        )))}
                     </tbody>
                 </table>
             </div>

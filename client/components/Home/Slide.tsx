@@ -37,7 +37,7 @@ const Slide = () => {
     <div className="relative flex mt-52 py-10 w-full h-[800px]">
       <div className="absolute h-[800px] z-[1] bg-[#0f1d22] flex justify-center items-center w-[50%]">
         <div className="w-[40%] text-center py-10">
-          <img className="my-7 mx-auto" src="images/quote-mark.png" alt="Quote Mark" />
+          <img className="my-7 mx-auto" src="https://laurent.qodeinteractive.com/wp-content/plugins/laurent-core/post-types/testimonials/shortcodes/testimonials/assets/img/quote-mark.png" alt="Quote Mark" />
           <div className="w-full overflow-hidden">
             <div className="flex w-full transition-transform duration-500" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
               {slides.map((slide, index) => (

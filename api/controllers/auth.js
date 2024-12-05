@@ -5,44 +5,13 @@ const jwt = require("jsonwebtoken");
 const multer = require('multer');
 const path = require('path');
 
-const createJwtToken = (user) => {
-    return jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
-      expiresIn: '30d',
-    });
-  };
-  
-  const socialLogin = async (req, res) => {
-    const { email, name, googleId, avatar } = req.body;
-  
-    try {
-      let user = await User.findOne({ googleId });
-  
-      if (!user) {
-        user = new User({
-          email,
-          name,
-          googleId,
-          avatar,
-        });
-  
-        await user.save();
-      }
-  
-      const token = createJwtToken(user);
-  
-      res.status(200).json({ message: 'Đăng nhập thành công', token });
-    } catch (error) {
-      console.error('Lỗi khi lưu người dùng vào DB:', error);
-      res.status(500).json({ message: 'Lỗi server' });
-    }
-  };
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads/');
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname)); 
+        cb(null, Date.now() + path.extname(file.originalname)); // Tạo tên file duy nhất
     }
 });
 const upload = multer({ storage: storage });
@@ -94,46 +63,9 @@ const login = async (req, res, next) => {
         next(err);
     }
 };
-
-
-const loginWithGoogle = async (req, res, next) => {
-    try {
-      const { email, name, googleId, avatar } = req.body;
-  
-      let user = await User.findOne({ googleId });
-  
-      if (!user) {
-        user = await User.findOne({ email });
-  
-        if (user) {
-          user.googleId = googleId;
-          user.avatar = avatar; 
-          await user.save();
-        } else {
-          user = new User({
-            email,
-            name,
-            googleId,
-            avatar,
-            password: undefined, 
-          });
-  
-          await user.save();
-        }
-      }
-  
-      res.status(200).json({ message: "Đăng nhập thành công", user });
-    } catch (err) {
-      console.error("Lỗi khi lưu vào cơ sở dữ liệu:", err);
-      next(err);
-    }
-  };
-  
-
-
 const checkEmailExists = async (req, res) => {
     const { email } = req.body;
-    const user = await User.findOne({ email }); 
+    const user = await User.findOne({ email }); // Tìm kiếm người dùng với email
     if (user) {
       return res.status(200).json({ exists: true });
     }
@@ -143,7 +75,5 @@ const checkEmailExists = async (req, res) => {
 module.exports = {
     register,
     login,
-    checkEmailExists,
-    loginWithGoogle,
-    socialLogin,
+    checkEmailExists
 };

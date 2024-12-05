@@ -17,4 +17,7 @@ export interface FormData {
     gender: string;
     isAdmin: boolean;
   }
+  export interface UserState {
+    [key: string]: User;
+}
   

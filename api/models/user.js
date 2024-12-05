@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { type } = require('os');
 const UserSchema = new mongoose.Schema({
     name: {
       type: String,
@@ -18,21 +17,13 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
       type: String,
-      required: function() {
-        return !this.googleId; 
-      },
+      required: true,
     },
     isAdmin: {
       type: Boolean,
       default: false,
     },
     img: {
-      type: String,
-    },
-    avatar:{
-      type: String,
-    },
-    googleId:{
       type: String,
     },
     booking: [

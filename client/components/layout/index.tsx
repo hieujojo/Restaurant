@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Navbar from "./Navbar ";
 import Footer from "./Footer";
@@ -9,19 +9,36 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const [isTablet, setIsTablet] = useState(false);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsTablet(window.innerWidth === 1024);
+    };
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const router = useRouter();
 
   const handleNavigation = () => {
     router.push("/");
   };
+
   return (
     <div className="nav-md relative bg-[#0c1315]">
-      <div className="w-px z-50 border-l border-custom-brown absolute left-28 h-full"></div>
-      <div className="w-px z-50 border-l border-custom-brown absolute right-28 h-full"></div>
+     <div
+        className={`w-px z-50 border-l border-custom-brown absolute left-28 h-full ${isTablet ? 'hidden' : 'block'}`}
+      ></div>
+      <div
+        className={`w-px z-50 border-l border-custom-brown absolute right-28 h-full ${isTablet ? 'hidden' : 'block'}`}
+      ></div>
       <div className="bg-none absolute flex justify-between w-full">
         <div
           className="float-left justify-center items-center p-[25px] cursor-pointer"
-          onClick={handleNavigation}>
+          onClick={handleNavigation}
+        >
           <svg
             className="w-14 h-14"
             version="1.1"
@@ -114,7 +131,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {children}
       </div>
       <div className="z-50 left-28 w-full">
-        <Footer></Footer>
+        <Footer children={undefined} />
       </div>
     </div>
   );

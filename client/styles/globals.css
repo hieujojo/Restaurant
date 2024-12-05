@@ -1,4 +1,3 @@
-/* styles.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,7 +8,10 @@
   }
 
   input[type="time"]::-webkit-calendar-picker-indicator {
-    color: #C9AB81; /* Màu nâu cho icon */
+    color: #C9AB81; 
+  }
+  .font-miniver {
+    font-family: 'Miniver', sans-serif;
   }
 }
 

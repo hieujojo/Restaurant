@@ -1,13 +1,12 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from "react";
 import Layout from "@/components/Layout";
 import Slide from "./Slide";
-import BannerHome from './bannerHome';
+import BannerHome from "./bannerHome";
 import CardDish from "./CardDish";
 import Link from "next/link";
+import styled from "styled-components";
 
 const HomeComponents = () => {
-
-
   const [isVideoVisible, setIsVideoVisible] = useState(false);
   const videoContainerRef = useRef(null);
 
@@ -15,24 +14,133 @@ const HomeComponents = () => {
     setIsVideoVisible(true);
   };
 
-  const handleClickOutside = (event) => {
-    if (videoContainerRef.current && !videoContainerRef.current.contains(event.target)) {
+  const handleClickOutside = (event: { target: any }) => {
+    if (
+      videoContainerRef.current &&
+      !videoContainerRef.current.contains(event.target)
+    ) {
       setIsVideoVisible(false);
     }
   };
 
   useEffect(() => {
     if (isVideoVisible) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     } else {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isVideoVisible]);
-  
+
+  const ResponsiveImage = styled.img`
+    max-width: 430px;
+
+    @media (max-width: 1024px) {
+      max-width: 190px;
+      height: 550px;
+    }
+  `;
+
+  const ResponsiveImage1 = styled.img`
+    max-width: 500px;
+
+    @media (max-width: 1024px) {
+      max-width: 250px;
+      height: 250px;
+    }
+  `;
+
+  const OurBestContainer = styled.div`
+    .recommendation-text {
+      color: #c9ab81;
+      margin-left: 24rem;
+      margin-top: 2.5rem;
+    }
+
+    .header-section {
+      display: flex;
+      margin-top: 1.75rem;
+      margin-left: 13rem;
+      align-items: center;
+    }
+
+    .title {
+      color: #c9ab81;
+      letter-spacing: 5px;
+      font-size: 3rem;
+      text-transform: uppercase;
+      width: 25rem;
+      text-align: center;
+    }
+
+    .description {
+      color: white;
+      width: 31.25rem;
+      margin-top: 2.5rem;
+      font-size: 1.125rem;
+      text-align: center;
+      margin-left: 13rem;
+    }
+
+    .button-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .view-all-button {
+      border: 1px solid #c9ab81;
+      color: white;
+      padding: 0.75rem 2rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-top: 2.5rem;
+      margin-left: 11rem;
+      transition: background-color 0.3s, color 0.3s;
+
+      &:hover {
+        background-color: #c9ab81;
+        color: #0b1315;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .recommendation-text {
+        margin-left: 13rem;
+        font-size: 1.25rem;
+      }
+
+      .header-section {
+        flex-direction: column;
+        margin-left: 2rem;
+        text-align: center;
+      }
+      .icon {
+        display: none;
+      }
+
+      .title {
+        font-size: 30px;
+        width: 80%;
+        margin-right: 100px;
+        margin-top: -10px;
+      }
+
+      .description {
+        margin-left: 60px;
+        width: 70%;
+        margin-top: 10px;
+      }
+
+      .view-all-button {
+        margin-right: 240px;
+      }
+    }
+  `;
+
   return (
     <Layout>
       <BannerHome />
@@ -99,7 +207,10 @@ const HomeComponents = () => {
         </div>
         <div className="flex mt-8 justify-center">
           <div>
-            <img src="images/main-img-1.jpg" width="430px" alt="" />
+            <ResponsiveImage
+              src="https://laurent.qodeinteractive.com/wp-content/uploads/2019/10/main-img-1.jpg"
+              alt="Responsive Image"
+            />
           </div>
           <div className="ml-10">
             <svg
@@ -118,21 +229,27 @@ const HomeComponents = () => {
             </svg>
           </div>
           <div className="ml-10">
-            <img src="images/main-img-2.jpg" width="430px" alt="" />
+            <ResponsiveImage
+              src="https://laurent.qodeinteractive.com/wp-content/uploads/2019/10/main-img-2.jpg"
+              alt="Responsive Image"
+            />
           </div>
         </div>
         <Slide />
         <div className="flex mt-52 ml-32">
           <div className="">
-            <img src="images/main-img-5.jpg" width="500px" alt="" />
+            <ResponsiveImage1
+              src="https://laurent.qodeinteractive.com/wp-content/uploads/2019/10/main-img-5.jpg"
+              alt="ResponsiveImage1"
+            />
           </div>
-          <div className="">
+          <OurBestContainer>
             <div>
-              <p className="text-[#c9ab81] ml-96 mt-10">Recommendations</p>
+              <p className="recommendation-text">Recommendations</p>
             </div>
-            <div className="flex mt-7 ml-52">
+            <div className="header-section">
               <svg
-                className="mt-6"
+                className="icon"
                 xmlns="http://www.w3.org/2000/svg"
                 width="41.125"
                 height="9.146"
@@ -150,11 +267,9 @@ const HomeComponents = () => {
                   d="M40.881.591L20.562 8.576.243.591"
                 />
               </svg>
-              <p className="text-[#c9ab81] tracking-[5px] text-5xl uppercase w-[400px] text-center">
-                Our best specialties
-              </p>
+              <p className="title">Our best specialties</p>
               <svg
-                className="mt-6"
+                className="icon"
                 xmlns="http://www.w3.org/2000/svg"
                 width="41.125"
                 height="9.146"
@@ -174,23 +289,21 @@ const HomeComponents = () => {
               </svg>
             </div>
             <div>
-              <p className="text-white w-[500px] mt-10 text-lg text-center ml-52">
+              <p className="description">
                 Lorem ipsum dolor sit amet, consectet adipisicing eli sed do eiu
                 smotem por incididunt ut abore et dolore magali qua. Ut enim ad
                 minm eni amquis nostrud exercitation.
               </p>
             </div>
-            <div className="flex items-center justify-center">
-              <button className="border border-[#c9ab81] text-white px-8 py-3 tracking-widest hover:bg-[#c9ab81] hover:text-[#0b1315] uppercase mt-10 ml-44 transition-colors duration-300">
-                view all
-              </button>
+            <div className="button-container">
+              <button className="view-all-button">view all</button>
             </div>
-          </div>
+          </OurBestContainer>
         </div>
-        <div className="bg-[#0f1d22] w-full mt-20 text-[#c9ab81] relative h-[947px]">
+        <div className="bg-[#0f1d22] w-full mt-20 text-[#c9ab81] relative h-[947px] lg:h-[1480px] xl:h-[950px]">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="eltdf-main-home-svg-pattern absolute top-[620px] left-[-100px]"
+            className="eltdf-main-home-svg-pattern absolute xl:top-[623px] left-[-100px] md:left-[-140px] lg:top-[1153px]"
             width="326.209"
             height="326"
             viewBox="0 0 326 70"
@@ -212,7 +325,7 @@ const HomeComponents = () => {
             </p>
             <div className="flex justify-center">
               <svg
-                className="mt-6"
+                className="mt-9"
                 xmlns="http://www.w3.org/2000/svg"
                 width="41.125"
                 height="9.146"
@@ -253,7 +366,7 @@ const HomeComponents = () => {
                 />
               </svg>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-12">
+            <div className="grid lg:grid-cols-1 xl:grid-cols-2 gap-12 mt-12 ">
               <div>
                 <div className="flex justify-between items-center">
                   <h3 className="text-xl font-semibold custom-gold text-[#c9ab81] tracking-[3px] uppercase">
@@ -270,7 +383,7 @@ const HomeComponents = () => {
               </div>
               <div>
                 <div className="flex justify-between items-center">
-                  <h3 className="text-xl font-semibold custom-gold text-[#c9ab81] tracking-[3px] uppercase">
+                  <h3 className="text-xl font-semibold custom-gold text-[#c9ab81] tracking-[3px] uppercase md:left-0 ">
                     pan seared scallops
                   </h3>
                   <span className="border-t-2 border-[#c9ab81] flex-grow mx-4" />
@@ -396,17 +509,22 @@ const HomeComponents = () => {
               </div>
             </div>
             <div className="flex items-center justify-center">
-              <button className="border border-[#c9ab81] text-white px-8 py-3 tracking-widest hover:bg-[#c9ab81] hover:text-[#0b1315] uppercase mt-32 transition-colors duration-300">
+              <button className="border border-[#c9ab81] text-white px-8 py-3 tracking-widest hover:bg-[#c9ab81] hover:text-[#0b1315] uppercase mt-32 transition-colors duration-300 ">
                 view all
               </button>
             </div>
           </div>
         </div>
         <div className="flex mt-40 justify-center">
-          <img src="images/main-img-6.jpg" width="350px" alt="" />
+          <img
+            src="https://laurent.qodeinteractive.com/wp-content/uploads/2019/10/main-img-6.jpg"
+            width="350px"
+            alt=""
+            className="lg:hidden xl:block"
+          />
           <img
             className="ml-8"
-            src="images/main-img-8.jpg"
+            src="https://laurent.qodeinteractive.com/wp-content/uploads/2019/10/main-img-8.jpg"
             width="300px"
             alt=""
           />
@@ -478,46 +596,52 @@ const HomeComponents = () => {
           </div>
         </div>
         <div className="bg-[#0b1315] mt-40 text-white relative">
-      <div
-        className="h-[500px] mt-20 bg-fixed bg-center bg-cover flex items-center justify-center"
-        style={{ backgroundImage: 'url("images/main-background-5.jpg")' }}
-      >
-        {!isVideoVisible ? (
           <div
-            className="flex items-center justify-center w-16 h-16 rounded-full border-2 hover:bg-[#c9ab81] border-[#c9ab81] cursor-pointer"
-            onClick={handlePlayClick}
+            className="h-[500px] mt-20 bg-fixed bg-center bg-cover flex items-center justify-center"
+            style={{
+              backgroundImage:
+                'url("https://laurent.qodeinteractive.com/wp-content/uploads/2019/11/main-background-5.jpg")',
+            }}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-40 h-40 text-[#c9ab81] hover:text-white ml-1"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1}
-                d="M14.752 11.168l-5.197-2.998A1 1 0 008 9.132v5.736a1 1 0 001.555.832l5.197-2.998a1 1 0 000-1.664z"
-              />
-            </svg>
+            {!isVideoVisible ? (
+              <div
+                className="flex items-center justify-center w-16 h-16 rounded-full border-2 hover:bg-[#c9ab81] border-[#c9ab81] cursor-pointer"
+                onClick={handlePlayClick}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-40 h-40 text-[#c9ab81] hover:text-white ml-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1}
+                    d="M14.752 11.168l-5.197-2.998A1 1 0 008 9.132v5.736a1 1 0 001.555.832l5.197-2.998a1 1 0 000-1.664z"
+                  />
+                </svg>
+              </div>
+            ) : (
+              <div
+                className="w-full h-full flex justify-center items-center relative"
+                ref={videoContainerRef}
+              >
+                <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-10"></div>
+                <iframe
+                  className="relative z-20"
+                  src="https://player.vimeo.com/video/369245407?autoplay=1&muted=1"
+                  width="1000"
+                  height="650"
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                  title="Video"
+                ></iframe>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="w-full h-full flex justify-center items-center relative" ref={videoContainerRef}>
-            <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-10"></div>
-            <iframe
-              className="relative z-20"
-              src="https://player.vimeo.com/video/369245407?autoplay=1&muted=1"
-              width="1000"
-              height="650"
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowFullScreen
-              title="Video"
-            ></iframe>
-          </div>
-        )}
-      </div>
-    </div>
+        </div>
 
         <div className="flex justify-center text-[#c9ab81] mt-20">
           Laurent’s tasty offer
@@ -654,10 +778,15 @@ const HomeComponents = () => {
                 <div className="border border-[#c9ab81] px-4 py-2 flex items-center w-40 text-white">
                   <span>11:00 am</span>
                 </div>
-                <button className="border text-white uppercase border-[#c9ab81] px-6 py-2 hover:bg-[#c9ab81] hover:text-[#0b1315] transition duration-300">
-                  <Link href="/Booking/Booking" legacyBehavior>
-                    book now
-                  </Link>
+                <button
+                  className="border text-white uppercase border-[#c9ab81] px-6 py-2 hover:bg-[#c9ab81] hover:text-[#0b1315] transition duration-300"
+                  onClick={() =>
+                    window.alert(
+                      "Please download and install the application to fully experience the features."
+                    )
+                  }
+                >
+                  Book Now
                 </button>
               </div>
             </div>

@@ -11,7 +11,7 @@ const chef = () => {
             <div className="x_panel">
               <div className="x_title d-flex justify-content-between">
                 <div>
-                  <h2><small>User Manager</small></h2>
+                  <h2><small>Chef Manager</small></h2>
                 <FormCreate></FormCreate>
               </div>
               <ul className="nav navbar-right panel_toolbox">

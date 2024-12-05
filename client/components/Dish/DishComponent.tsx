@@ -30,12 +30,21 @@ const DishComponent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [filter, setFilter] = useState<string>("All");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const postsPerPage = 9; 
 
   useEffect(() => {
     const fetchData = async () => {
+      const BASE_URL = "http://localhost:8800";
       try {
         const response = await axios.get(GET_DISHS_ENDPOINT);
-        setPosts(response.data);
+        const formattedPosts = response.data.map((post: Post) => ({
+          ...post,
+          image: post.image.map((img: string) =>
+            img.startsWith("http") ? img : `${BASE_URL}/${img}`
+          ),
+        }));
+        setPosts(formattedPosts);
         setIsLoading(false);
       } catch (error) {
         setError("Không thể tải bài viết. Vui lòng thử lại sau.");
@@ -50,6 +59,10 @@ const DishComponent: React.FC = () => {
     router.push("/");
   };
 
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+
   const renderContent = () => {
     const containerStyle = {
       maxWidth: "80%",
@@ -60,7 +73,7 @@ const DishComponent: React.FC = () => {
     };
 
     const imgStyle = {
-      height: "200px",
+      height: "100%",
       width: "100%",
       objectFit: "cover",
     };
@@ -73,7 +86,7 @@ const DishComponent: React.FC = () => {
       alignItems: "center",
       textAlign: "center",
       transformOrigin: "center",
-      height: "100%",
+      height: "97%",
       transition: "transform 0.3s ease",
     };
 
@@ -81,15 +94,16 @@ const DishComponent: React.FC = () => {
       transform: "scale(0.9)",
     };
 
-    const filteredPosts = posts.filter((post) => {
+    const filteredPosts = currentPosts.filter((post) => {
       return (
         post.image &&
         post.image[0] &&
         post.image[0].trim() !== "" &&
         post.image[0].includes(".") &&
-        (filter === "All" || post.type.toLowerCase() === filter.toLowerCase())
+        (filter === "All" || post.type.toLowerCase().trim() === filter.toLowerCase().trim())
       );
     });
+    
 
     if (filteredPosts.length === 0) {
       return <p>No posts available.</p>;
@@ -98,36 +112,23 @@ const DishComponent: React.FC = () => {
     return (
       <div style={containerStyle}>
         {filteredPosts.map((post) => (
-          <div key={post._id} className="relative overflow-hidden rounded-lg shadow-lg group">
+          <div
+            key={post._id}
+            className="relative overflow-hidden rounded-lg shadow-lg group h-full w-full"
+          >
             <img src={post.image[0]} alt={post.name} style={imgStyle} />
             <div
-              className="absolute inset-0 transition-opacity duration-300 bg-custom-dark opacity-0 group-hover:opacity-100"
+              className="absolute transition-opacity w-[calc(100%-20px)] inset-[10px] duration-300 bg-custom-dark opacity-0 group-hover:opacity-100"
               style={contentStyle}
             >
               <div
                 style={{ ...contentStyle, ...hoverStyle }}
                 className="group-hover:transform scale-100"
               >
-                <h2 className="text-lg font-semibold uppercase tracking-wide text-white">
+                <h2 className="font-semibold uppercase tracking-[4px] text-3xl text-custom-yellow">
                   {post.name}
                 </h2>
-                <p className="text-sm mt-1 text-white">Giá: {post.price} VND</p>
-                <p className="text-sm mt-1 text-white">Mô tả: {post.description}</p>
-                <p className="text-sm mt-1 text-white">Loại: {post.type}</p>
-                <p className="text-sm mt-1 text-white">
-                  Đánh giá:
-                  {post.evalue && post.evalue.length > 0 && (
-                    <span> {post.evalue[0].star} sao</span>
-                  )}
-                </p>
-                <div className="flex justify-center mt-3 space-x-3">
-                  <button className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
-                    Order
-                  </button>
-                  <button className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
-                    Detail
-                  </button>
-                </div>
+                <p className="text-xl mt-3 text-white"> {post.type}</p>
               </div>
             </div>
           </div>
@@ -136,8 +137,17 @@ const DishComponent: React.FC = () => {
     );
   };
 
+  const totalPages = Math.ceil(posts.length / postsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
-    <div className="min-h-screen relative z-0" style={{ backgroundColor: "#0b1315" }}>
+    <div
+      className="min-h-screen relative z-0"
+      style={{ backgroundColor: "#0b1315" }}
+    >
       <Layout>
         <div className="container mx-auto py-8 px-4">
           <div className="flex justify-between items-center mb-10">
@@ -145,9 +155,12 @@ const DishComponent: React.FC = () => {
               <p>Three Columns Portfolio</p>
             </div>
             <div className="flex items-center text-white mt-36 mr-32 text-base">
-              <p className="mr-3 hover:text-[#C9AB81] cursor-pointer"
-              onClick={handleNavigation}
-              >Home</p>
+              <p
+                className="mr-3 hover:text-[#C9AB81] cursor-pointer"
+                onClick={handleNavigation}
+              >
+                Home
+              </p>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 8.3 8.5"
@@ -174,31 +187,65 @@ const DishComponent: React.FC = () => {
           <div className="portfolio-buttons flex justify-center mb-8 space-x-4">
             <button
               onClick={() => setFilter("All")}
-              className={`px-4 py-2 ${filter === "All" ? "text-yellow-500" : "text-gray-500"}`}
+              className={`px-4 py-2 ${
+                filter === "All" ? "text-yellow-500" : "text-gray-500"
+              }`}
             >
               Show all
             </button>
             <button
-              onClick={() => setFilter("Raw food")}
-              className={`px-4 py-2 ${filter === "Raw food" ? "text-yellow-500" : "text-gray-500"}`}
+              onClick={() => setFilter("Desserts")}
+              className={`px-4 py-2 ${
+                filter === "Desserts" ? "text-yellow-500" : "text-gray-500"
+              }`}
             >
-              Raw food
+              Desserts
             </button>
             <button
-              onClick={() => setFilter("Main Course")}
-              className={`px-4 py-2 ${filter === "Main Course" ? "text-yellow-500" : "text-gray-500"}`}
+              onClick={() => setFilter("Main Courses")}
+              className={`px-4 py-2 ${
+                filter === "Main Courses" ? "text-yellow-500" : "text-gray-500"
+              }`}
             >
               Main Courses
             </button>
             <button
-              onClick={() => setFilter("snacks")}
-              className={`px-4 py-2 ${filter === "snacks" ? "text-yellow-500" : "text-gray-500"}`}
+              onClick={() => setFilter("Recipes")}
+              className={`px-4 py-2 ${
+                filter === "Recipes" ? "text-yellow-500" : "text-gray-500"
+              }`}
             >
-              Snacks
+              Recipes
             </button>
           </div>
 
-          {isLoading ? <p>Đang tải...</p> : error ? <p style={{ color: "red" }}>{error}</p> : renderContent()}
+          {isLoading ? (
+            <p>Đang tải...</p>
+          ) : error ? (
+            <p style={{ color: "red" }}>{error}</p>
+          ) : (
+            renderContent()
+          )}
+
+          <div className="flex justify-center space-x-4 mt-8">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <span className="flex items-center justify-center text-white">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </Layout>
     </div>

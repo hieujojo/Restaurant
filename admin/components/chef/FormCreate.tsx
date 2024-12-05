@@ -3,6 +3,9 @@ import type { FormData } from './interfaces';
 import axios from 'axios';
 import { CREATE_CHEF_ENDPOINT } from '@/utils/constants/endpoints';
 import Image from 'next/image';
+import { useDispatch } from 'react-redux';
+import { addChef } from '@/features/chef/chefSlice';
+import { setError } from '@/features/slices/errorSlices';
 
 const FormCreate: React.FC = () => {
     const [formData, setFormData] = useState<FormData>({
@@ -46,7 +49,7 @@ const FormCreate: React.FC = () => {
         }
         return errors;
       };
-    
+      const dispatch = useDispatch();
       const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const validationErrors = validate(formData);
@@ -62,20 +65,17 @@ const FormCreate: React.FC = () => {
                     data.append(key, value);
                 }
             }
-            data.forEach((value, key) => {
-                console.log(key, value);
-            });
             try {
                 const response = await axios.post(CREATE_CHEF_ENDPOINT, data);
                 if (response.status === 200) {
-                    alert('User has been created.');
+                    dispatch(addChef(response.data));
+                    dispatch(setError({ status: 'success', message: 'Create chef successfully!' }));
                     setShowModal(false);
                 } else {
-                    alert('Error creating user.');
+                    dispatch(setError({ status: 'danger', message: 'Create chef failed!' }));
                 }
             } catch (error) {
-                console.error('Error creating user:', error);
-                alert('Error creating user.');
+                dispatch(setError({ status: 'danger', message: 'Create chef failed!' }));
             }
         } else {
             setErrors(validationErrors);

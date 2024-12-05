@@ -1,25 +1,29 @@
 const Table = require('../models/table');
 const Area = require('../models/area');
 
-// const multer = require('multer');
-// const path = require('path');
+const multer = require('multer');
+const path = require('path');
 
-// // Cấu hình multer để lưu trữ tệp
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, 'uploads/'); // Thư mục lưu trữ hình ảnh trên máy chủ
-//     },
-//     filename: (req, file, cb) => {
-//         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-//         cb(null, uniqueSuffix + path.extname(file.originalname));
-//     }
-// });
+// Cấu hình multer để lưu ảnh vào thư mục 'uploads' với tên file là timestamp + tên gốc
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + path.extname(file.originalname);
+        cb(null, uniqueSuffix);
+    },
+});
 
-// const upload = multer({ storage: storage });
+const upload = multer({ storage: storage });
 
-// CREATE
+// Controller createTable với middleware upload nhiều file ảnh
 const createTable = async (req, res, next) => {
-    const newTable = new Table(req.body);
+    const images = req.files.map(file => `uploads/${file.filename}`);
+    const newTable = new Table({
+        ...req.body,
+        image: images, // Gán mảng đường dẫn ảnh vào trường 'image'
+    });
 
     try {
         const saveTable = await newTable.save();
@@ -27,7 +31,24 @@ const createTable = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
-}
+};
+
+// CREATE
+// const createTable = async (req, res, next) => {
+//     const newTable = new Table(req.body);
+
+//     try {
+//         const saveTable = await newTable.save();
+//         res.status(200).json(saveTable);
+//     } catch (err) {
+//         next(err);
+//     }
+// }
+
+
+
+
+
 // const uploadMiddleware = upload.array('images', 10);
 
 // const createTable = async (req, res, next) => {
@@ -161,6 +182,7 @@ const getTableByArea = async (req, res, next) => {
 
 module.exports = {
     createTable,
+    upload,
     getTable,
     getTables,
     findTableByType,

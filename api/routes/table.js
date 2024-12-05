@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
     createTable,
+    upload,
     getTable,
     getTables,
     findTableByType,
@@ -12,7 +13,7 @@ const {
     getTableByArea
 } = require('../controllers/tableController');
 
-router.post('/', createTable);
+router.post('/',upload.array('image', 10), createTable);
 router.put('/:id', updateTable);
 router.delete('/:id', deleteTable);
 router.get('/find/:id', getTable);

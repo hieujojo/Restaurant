@@ -1,11 +1,14 @@
 import React, { ChangeEvent, useState } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
-import { REGISTER_ENDPOINT } from '@/utils/constants/endpoints';
+import { CHECKEMAIL_ENDPOINT, REGISTER_ENDPOINT } from '@/utils/constants/endpoints';
 import type { FormData } from './interfaces';
+import { useDispatch } from 'react-redux';
+import { addUser } from '@/features/user/userSlices';
+import { setError } from '@/features/slices/errorSlices';
 
 const FormCreate: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({
+  const initialFormData: FormData = {
     name: '',
     email: '',
     password: '',
@@ -13,10 +16,13 @@ const FormCreate: React.FC = () => {
     img: '',
     gender: '',
     isAdmin: false,
-  });
+  };
+  
+  const [formData, setFormData] = useState<FormData>(initialFormData);  
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [showModal, setShowModal] = useState(false);
   const [imageSrc, setImageSrc] = useState('');
+  const dispatch = useDispatch();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = event.target;
@@ -26,12 +32,11 @@ const FormCreate: React.FC = () => {
     }));
   };
 
-  
-
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { files, id } = event.target;
     if (files && files.length > 0) {
       const src = URL.createObjectURL(files[0]);
+      console.log("image names", src);
       if (id === 'file-input') {
         setImageSrc(src);
         setFormData((prevData) => ({ ...prevData, img: files[0] }));
@@ -39,16 +44,21 @@ const FormCreate: React.FC = () => {
     }
   };
 
-  const validate = (validateData: FormData) => {
+  const validate = async (validateData: FormData) => {
     const errors: Partial<FormData> = {};
 
     if (!validateData.name) {
-      errors.name = 'name is required';
+      errors.name = 'Name is required';
     }
     if (!validateData.email) {
       errors.email = 'Email is required';
     } else if (!/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-z]+/.test(validateData.email)) {
       errors.email = 'Invalid email address';
+    } else {
+      const response = await axios.post(CHECKEMAIL_ENDPOINT, { email: validateData.email });
+      if (response.data.exists) {
+        errors.email = 'Email is already registered';
+      }
     }
     if (!validateData.phone) {
       errors.phone = 'Phone is required';
@@ -63,35 +73,38 @@ const FormCreate: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const validationErrors = validate(formData);
+    const validationErrors = await validate(formData);
     if (Object.keys(validationErrors).length === 0) {
-        const data = new FormData();
-        for (const key in formData) {
-            const value = formData[key as keyof FormData];
-            if (typeof value === 'boolean') {
-                data.append(key, value ? 'true' : 'false');
-            } else if (value instanceof File) {
-                data.append(key, value);
-            } else {
-                data.append(key, value);
-            }
+      const data = new FormData();
+      for (const key in formData) {
+        const value = formData[key as keyof FormData];
+        if (typeof value === 'boolean') {
+          data.append(key, value ? 'true' : 'false');
+        } else if (value instanceof File) {
+          data.append(key, value);
+        } else {
+          data.append(key, value);
         }
-        try {
-            const response = await axios.post(REGISTER_ENDPOINT, data);
-            if (response.status === 200) {
-                alert('User has been created.');
-                setShowModal(false);
-            } else {
-                alert('Error creating user.');
-            }
-        } catch (error) {
-            console.error('Error creating user:', error);
-            alert('Error creating user.');
+      }
+      console.log("Data before sending:", Array.from(data.entries()));
+      try {
+        const response = await axios.post(REGISTER_ENDPOINT, data);
+        if (response.status === 200) {
+          const newUser = response.data.newUser;
+          dispatch(addUser(newUser));
+          dispatch(setError({ status: 'success', message: 'Create user successfully!' }));
+          setFormData(initialFormData);
+          setShowModal(false);
+        } else {
+          dispatch(setError({ status: 'danger', message: 'Create user failed!' }));
         }
+      } catch (error) {
+        dispatch(setError({ status: 'danger', message: 'Create user failed!' }));
+      }
     } else {
-        setErrors(validationErrors);
+      setErrors(validationErrors);
     }
-};
+  };
 
 
   return (
@@ -149,7 +162,6 @@ const FormCreate: React.FC = () => {
                       id="name"
                       className="form-control"
                       name="name"
-                      required
                       onChange={handleChange}
                     />
                     {errors.name && <span className="text-danger">{errors.name}</span>}
@@ -161,7 +173,6 @@ const FormCreate: React.FC = () => {
                       id="email"
                       className="form-control"
                       name="email"
-                      required
                       onChange={handleChange}
                     />
                     {errors.email && <span className="text-danger">{errors.email}</span>}
@@ -173,7 +184,6 @@ const FormCreate: React.FC = () => {
                       id="phone"
                       className="form-control"
                       name="phone"
-                      required
                       onChange={handleChange}
                     />
                     {errors.phone && <span className="text-danger">{errors.phone}</span>}
@@ -181,16 +191,16 @@ const FormCreate: React.FC = () => {
                   <div className="form-group">
                     <label>Gender :</label>
                     <p>
-                      M:
+                      Male:
                       <input
                         type="radio"
-                        className="flat"
+                        className="flat me-5"
                         name="gender"
                         id="genderM"
                         value="male"
                         onChange={handleChange}
                       />
-                      F:
+                      Female:
                       <input
                         type="radio"
                         className="flat"
@@ -207,7 +217,6 @@ const FormCreate: React.FC = () => {
                       className="form-control"
                       type="password"
                       name="password"
-                      required
                       onChange={handleChange}
                     />
                     {errors.password && <span className="text-danger">{errors.password}</span>}

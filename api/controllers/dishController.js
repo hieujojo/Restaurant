@@ -1,5 +1,39 @@
 
 const Dish = require('../models/dish');
+// const multer = require('multer');
+// const path = require('path');
+
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, 'uploads/');
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, Date.now() + path.extname(file.originalname));
+//     }
+// });
+// const upload = multer({ storage: storage });
+// //CREATE
+// const createDish = async (req, res, next) => {
+//     try {
+//         upload.array('image')(req, res, async function (err) {
+//             if (err) {
+//                 return next(err);
+//             }     
+//             console.log(req.files);     
+//             const imagePaths = req.files ? req.files.map(file => `uploads/${file.filename}`) : [];
+//             console.log("req",imagePaths)
+//             const newDish = new Dish({
+//                 ...req.body,
+//                 image: imagePaths,
+//             });
+//             const saveDish = await newDish.save();
+//             res.status(200).json(saveDish);
+
+//         });
+//     } catch (err) {
+//         next(err);
+//     }
+// }
 const multer = require('multer');
 const path = require('path');
 
@@ -11,29 +45,27 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + path.extname(file.originalname));
     }
 });
+
 const upload = multer({ storage: storage });
-//CREATE
+
+// CREATE DISH CONTROLLER
 const createDish = async (req, res, next) => {
-    try {
-        upload.array('image')(req, res, async function (err) {
-            if (err) {
-                return next(err);
-            }     
-            console.log(req.files);     
-            const imagePaths = req.files ? req.files.map(file => `uploads/${file.filename}`) : [];
-            console.log("req",imagePaths)
+    upload.array('image')(req, res, async (err) => {
+        if (err) return next(err);
+
+        const imagePaths = req.files ? req.files.map(file => `uploads/${file.filename}`) : [];
+        try {
             const newDish = new Dish({
                 ...req.body,
                 image: imagePaths,
             });
-            const saveDish = await newDish.save();
-            res.status(200).json(saveDish);
-
-        });
-    } catch (err) {
-        next(err);
-    }
-}
+            const savedDish = await newDish.save();
+            res.status(200).json(savedDish);
+        } catch (err) {
+            next(err);
+        }
+    });
+};
 
 
 

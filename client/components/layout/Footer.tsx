@@ -41,8 +41,10 @@ const Footer: React.FC<LayoutProps> = ({ children }) => {
 
       <footer className="bg-[#0c1315] flex justify-center  ">
         <div className="footer-content text-center py-[12.5%]">
-          <div className="logo-footer mb-[36px] cursor-pointer"
-          onClick={handleNavigation}>
+          <div
+            className="logo-footer mb-[36px] cursor-pointer"
+            onClick={handleNavigation}
+          >
             <svg
               className="w-[10%] h-[10%] my-auto mx-auto"
               version="1.1"
